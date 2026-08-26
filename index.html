@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample Request — FENGQIYUNHAI</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#191419;
+  --raise:#241C26;
+  --line:#382E3A;
+  --bone:#EFE9E2;
+  --mute:#9A8C9B;
+  --rose:#B87D82;
+  --brass:#A88A50;
+  --err:#D48A8A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--ink);
+  color:var(--bone);
+  font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;
+  font-size:16px;
+  line-height:1.6;
+  padding:0 20px 80px;
+  min-height:100vh;
+}
+.wrap{max-width:520px;margin:0 auto}
+
+/* ── header ── */
+header{padding:56px 0 0;text-align:center}
+.eyebrow{
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--brass);font-weight:400;
+}
+.brand{
+  font-family:'Bodoni Moda',Georgia,serif;
+  font-size:15px;letter-spacing:.34em;text-transform:uppercase;
+  margin-top:22px;color:var(--bone);font-weight:400;
+}
+h1{
+  font-family:'Bodoni Moda',Georgia,serif;
+  font-weight:400;
+  font-size:clamp(34px,10vw,46px);
+  line-height:1.08;
+  margin:14px 0 16px;
+  letter-spacing:-.01em;
+}
+h1 em{font-style:italic;color:var(--rose)}
+.lede{color:var(--mute);font-size:15px;max-width:38ch;margin:0 auto}
+
+/* ── eyelet divider (signature) ── */
+.eyelets{
+  height:12px;margin:36px 0;
+  background-image:radial-gradient(circle at center,transparent 0 2.4px,var(--rose) 2.4px 3.4px,transparent 3.4px);
+  background-size:20px 12px;
+  background-repeat:repeat-x;
+  background-position:center;
+  opacity:.45;
+}
+
+/* ── perks ── */
+.perks{list-style:none}
+.perks li{
+  position:relative;padding-left:26px;margin-bottom:11px;
+  font-size:15px;color:var(--bone);
+}
+.perks li::before{
+  content:'';position:absolute;left:2px;top:9px;
+  width:8px;height:8px;border-radius:50%;
+  border:1px solid var(--brass);
+}
+.perks b{font-weight:500;color:#fff}
+.sect-label{
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:16px;font-weight:400;
+}
+
+/* ── form ── */
+form{margin-top:4px}
+.grp{margin-bottom:20px}
+.row{display:flex;gap:12px}
+.row .grp{flex:1}
+label{
+  display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px;font-weight:400;
+}
+label .req{color:var(--rose)}
+input[type=text],input[type=email],select{
+  width:100%;
+  background:var(--raise);
+  border:1px solid var(--line);
+  border-radius:2px;
+  color:var(--bone);
+  font-family:'Jost',sans-serif;font-weight:300;font-size:16px;
+  padding:13px 14px;
+  transition:border-color .18s,box-shadow .18s;
+}
+select{
+  appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%239A8C9B' stroke-width='1.4'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;cursor:pointer;
+}
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--brass);
+  box-shadow:0 0 0 3px rgba(168,138,80,.18);
+}
+input::placeholder{color:#5C4F5E}
+.hint{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.5}
+
+/* ── checkboxes ── */
+.check{
+  display:flex;gap:12px;align-items:flex-start;
+  margin-bottom:16px;cursor:pointer;
+}
+.check input{
+  appearance:none;flex:0 0 18px;width:18px;height:18px;margin-top:2px;
+  border:1px solid var(--line);border-radius:2px;background:var(--raise);
+  cursor:pointer;position:relative;transition:border-color .18s,background .18s;
+}
+.check input:checked{background:var(--rose);border-color:var(--rose)}
+.check input:checked::after{
+  content:'';position:absolute;left:5px;top:1.5px;
+  width:5px;height:10px;border:solid var(--ink);
+  border-width:0 1.8px 1.8px 0;transform:rotate(43deg);
+}
+.check input:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.check span{font-size:14px;color:var(--bone);line-height:1.5}
+
+/* ── button ── */
+button{
+  width:100%;margin-top:12px;
+  background:var(--bone);color:var(--ink);
+  border:none;border-radius:2px;
+  font-family:'Jost',sans-serif;font-weight:500;
+  font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+  padding:17px;cursor:pointer;
+  transition:background .18s,transform .12s;
+}
+button:hover:not(:disabled){background:#fff}
+button:active:not(:disabled){transform:translateY(1px)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+.msg{
+  margin-top:16px;padding:13px 15px;border-radius:2px;
+  font-size:14px;display:none;
+}
+.msg.bad{display:block;background:rgba(212,138,138,.11);border:1px solid rgba(212,138,138,.35);color:var(--err)}
+
+footer{
+  margin-top:40px;text-align:center;
+  font-size:12.5px;color:#6B5F6C;line-height:1.7;
+}
+
+/* ── success ── */
+#done{display:none;text-align:center;padding:80px 0}
+#done h2{
+  font-family:'Bodoni Moda',Georgia,serif;font-weight:400;
+  font-size:38px;margin-bottom:16px;
+}
+#done h2 em{font-style:italic;color:var(--rose)}
+#done p{color:var(--mute);font-size:15px;max-width:34ch;margin:0 auto 10px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:400px){.row{flex-direction:column;gap:0}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header>
+    <div class="eyebrow">For creators</div>
+    <div class="brand">FengQiYunHai</div>
+    <h1>Where should we<br><em>send it?</em></h1>
+    <p class="lede">A minute of details and your sample goes out. We make everything in our own factory, so sizing can be adjusted.</p>
+  </header>
+
+  <div class="eyelets" role="presentation"></div>
+
+  <div class="sect-label">What you get</div>
+  <ul class="perks">
+    <li><b>A free sample</b> — yours to keep</li>
+    <li><b>20% commission</b> on every sale you drive</li>
+    <li><b>New styles 7 days early</b>, before they go public</li>
+    <li><b>Your own discount code</b> for your followers</li>
+    <li><b>Size adjustments</b> — we cut it ourselves</li>
+  </ul>
+
+  <div class="eyelets" role="presentation"></div>
+
+  <form id="f" novalidate>
+    <div class="sect-label">Who you are</div>
+
+    <div class="grp">
+      <label for="email">Email <span class="req">*</span></label>
+      <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
+    </div>
+
+    <div class="row">
+      <div class="grp">
+        <label for="tt">TikTok <span class="req">*</span></label>
+        <input type="text" id="tt" name="tiktok_handle" required placeholder="@yourhandle">
+      </div>
+      <div class="grp">
+        <label for="ig">Instagram</label>
+        <input type="text" id="ig" name="ig_handle" placeholder="@yourhandle">
+      </div>
+    </div>
+
+    <div class="grp">
+      <label for="style">Your style</label>
+      <select id="style" name="content_style">
+        <option value="">Pick one</option>
+        <option>Y2K</option>
+        <option>Casual</option>
+        <option>Office</option>
+        <option>Vintage</option>
+        <option>Victorian</option>
+        <option>Other</option>
+      </select>
+      <div class="hint">Helps us pick the right piece for you.</div>
+    </div>
+
+    <div class="eyelets" role="presentation"></div>
+    <div class="sect-label">Where it goes</div>
+
+    <div class="grp">
+      <label for="name">Full name <span class="req">*</span></label>
+      <input type="text" id="name" name="full_name" required autocomplete="name">
+    </div>
+
+    <div class="grp">
+      <label for="a1">Street address <span class="req">*</span></label>
+      <input type="text" id="a1" name="address_line1" required autocomplete="address-line1">
+    </div>
+
+    <div class="grp">
+      <label for="a2">Apt, suite, unit</label>
+      <input type="text" id="a2" name="address_line2" autocomplete="address-line2">
+    </div>
+
+    <div class="grp">
+      <label for="city">City <span class="req">*</span></label>
+      <input type="text" id="city" name="city" required autocomplete="address-level2">
+    </div>
+
+    <div class="row">
+      <div class="grp">
+        <label for="state">State <span class="req">*</span></label>
+        <input type="text" id="state" name="state" required maxlength="2" placeholder="CA" autocomplete="address-level1">
+      </div>
+      <div class="grp">
+        <label for="zip">ZIP <span class="req">*</span></label>
+        <input type="text" id="zip" name="zip" required inputmode="numeric" autocomplete="postal-code">
+      </div>
+    </div>
+
+    <div class="grp">
+      <label for="size">Size <span class="req">*</span></label>
+      <select id="size" name="size" required>
+        <option value="">Pick your size</option>
+        <option>S</option><option>M</option><option>L</option>
+        <option>XL</option><option>XXL</option><option>3XL</option>
+      </select>
+      <div class="hint">Between sizes? Tell us in your reply and we'll adjust the cut.</div>
+    </div>
+
+    <div class="eyelets" role="presentation"></div>
+    <div class="sect-label">Before we ship</div>
+
+    <label class="check">
+      <input type="checkbox" id="rights" required>
+      <span>You can use the photos and videos I make with this sample in your ads, product pages and social accounts. <span class="req">*</span></span>
+    </label>
+
+    <label class="check">
+      <input type="checkbox" id="optin">
+      <span>Email me when new styles drop — about twice a month.</span>
+    </label>
+
+    <button type="submit" id="btn">Send my sample</button>
+    <div class="msg" id="msg"></div>
+
+    <footer>
+      Your address is used only to ship your sample. We never sell it or pass it on.
+    </footer>
+  </form>
+</div>
+
+<div class="wrap" id="done">
+  <h2>Got it — <em>thank you</em></h2>
+  <p>Your sample is being packed. Watch your inbox for tracking within a few days.</p>
+  <p>We'll also send your personal discount code once it ships.</p>
+  <div class="eyelets" role="presentation" style="max-width:200px;margin:32px auto 0"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://vjblxvebexpqlxfhwzlm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_TAtVWHXtEycUHu1xwslZSw_JdFOOg5l';
+
+const f    = document.getElementById('f');
+const btn  = document.getElementById('btn');
+const msg  = document.getElementById('msg');
+const app  = document.getElementById('app');
+const done = document.getElementById('done');
+
+const val = id => document.getElementById(id).value.trim();
+
+function fail(text, focusId){
+  msg.textContent = text;
+  msg.className = 'msg bad';
+  if (focusId) document.getElementById(focusId).focus();
+  msg.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+f.addEventListener('submit', async e => {
+  e.preventDefault();
+  msg.className = 'msg';
+
+  // validate
+  const email = val('email');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return fail('That email address looks incomplete.', 'email');
+  if (!val('tt'))    return fail('We need your TikTok handle to match your request.', 'tt');
+  if (!val('name'))  return fail('Add the name the package should be addressed to.', 'name');
+  if (!val('a1'))    return fail('Add a street address.', 'a1');
+  if (!val('city'))  return fail('Add a city.', 'city');
+  if (!/^[A-Za-z]{2}$/.test(val('state'))) return fail('Use the 2-letter state code, like CA.', 'state');
+  if (!/^\d{5}(-\d{4})?$/.test(val('zip'))) return fail('ZIP should be 5 digits.', 'zip');
+  if (!val('size'))  return fail('Pick a size so we send the right fit.', 'size');
+  if (!document.getElementById('rights').checked)
+    return fail('We need permission to use your content before we can ship.', 'rights');
+
+  const norm = h => { h = h.trim(); return h && !h.startsWith('@') ? '@'+h : h; };
+
+  const payload = {
+    email,
+    tiktok_handle: norm(val('tt')),
+    ig_handle:     norm(val('ig')) || null,
+    full_name:     val('name'),
+    address_line1: val('a1'),
+    address_line2: val('a2') || null,
+    city:          val('city'),
+    state:         val('state').toUpperCase(),
+    zip:           val('zip'),
+    size:          val('size'),
+    content_style: val('style') || null,
+    usage_rights:  true,
+    email_optin:   document.getElementById('optin').checked
+  };
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/creator_signup', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    app.style.display = 'none';
+    done.style.display = 'block';
+    window.scrollTo(0, 0);
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Send my sample';
+    fail("That didn't go through. Check your connection and try again.");
+  }
+});
+</script>
+</body>
+</html>
