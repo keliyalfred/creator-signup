@@ -81,6 +81,107 @@ h1 em{font-style:italic;color:var(--rose)}
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--mute);margin-bottom:16px;font-weight:400;
 }
+.sect-label .sub{
+  display:block;letter-spacing:0;text-transform:none;
+  font-size:13px;color:#6B5F6C;margin-top:5px;
+}
+
+/* ── catalogue ── */
+.cat{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+.card{
+  background:var(--raise);
+  border:1px solid var(--line);
+  border-radius:3px;
+  overflow:hidden;
+  transition:border-color .18s,box-shadow .18s;
+}
+.card.on{
+  border-color:var(--brass);
+  box-shadow:0 0 0 2px rgba(168,138,80,.2);
+}
+.shot{
+  position:relative;
+  aspect-ratio:4/5;
+  background:#2E2530;
+  overflow:hidden;
+}
+.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot .ph{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bodoni Moda',Georgia,serif;
+  font-size:20px;letter-spacing:.1em;
+  color:rgba(239,233,226,.5);
+}
+.tag{
+  position:absolute;top:8px;left:8px;
+  background:rgba(25,20,25,.82);
+  color:var(--brass);
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  padding:4px 7px;border-radius:2px;
+}
+.meta{padding:11px 11px 13px}
+.codeline{
+  display:flex;align-items:baseline;justify-content:space-between;gap:6px;
+}
+.code{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--brass);
+}
+.sz{
+  font-size:10px;letter-spacing:.08em;
+  color:var(--mute);white-space:nowrap;
+}
+.pname{
+  font-size:13.5px;color:var(--bone);line-height:1.35;
+  margin:4px 0 9px;min-height:2.7em;
+}
+.dots{display:flex;flex-wrap:wrap;gap:6px}
+.dot{
+  width:20px;height:20px;border-radius:50%;
+  border:1px solid rgba(239,233,226,.3);
+  cursor:pointer;padding:0;background-clip:padding-box;
+  position:relative;transition:transform .14s;
+  flex:0 0 auto;
+}
+.dot:hover{transform:scale(1.12)}
+.dot.on::after{
+  content:'';position:absolute;inset:-4px;
+  border:1px solid var(--brass);border-radius:50%;
+}
+.dot:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+.picked{
+  margin-top:16px;padding:12px 14px;
+  background:var(--raise);border:1px solid var(--line);
+  border-radius:2px;font-size:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.picked .sw{
+  width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--line);flex:0 0 auto;
+}
+.picked .txt{flex:1;color:var(--bone)}
+.picked .txt b{font-weight:500}
+.picked .clr{
+  background:none;border:none;color:var(--mute);
+  font-family:'Jost',sans-serif;font-size:12px;
+  text-decoration:underline;cursor:pointer;padding:4px;
+}
+.picked .clr:hover{color:var(--rose)}
+.nopick{
+  margin-top:14px;font-size:13px;color:var(--mute);text-align:center;
+}
+.nopick button{
+  background:none;border:none;color:var(--rose);
+  font-family:'Jost',sans-serif;font-size:13px;font-weight:300;
+  text-decoration:underline;cursor:pointer;padding:0;
+  width:auto;margin:0;letter-spacing:0;text-transform:none;
+}
 
 /* ── form ── */
 form{margin-top:4px}
@@ -197,6 +298,25 @@ footer{
 
   <div class="eyelets" role="presentation"></div>
 
+  <div class="sect-label">
+    Pick your piece
+    <span class="sub">Tap a colour to choose. Every style comes in S–3XL.</span>
+  </div>
+
+  <div class="cat" id="cat"></div>
+
+  <div class="picked" id="picked" style="display:none">
+    <span class="sw" id="pickSw"></span>
+    <span class="txt" id="pickTxt"></span>
+    <button type="button" class="clr" id="pickClr">Clear</button>
+  </div>
+
+  <div class="nopick" id="nopick">
+    Not sure? <button type="button" id="letus">Let us pick for you</button>
+  </div>
+
+  <div class="eyelets" role="presentation"></div>
+
   <form id="f" novalidate>
     <div class="sect-label">Who you are</div>
 
@@ -269,7 +389,7 @@ footer{
       <select id="size" name="size" required>
         <option value="">Pick your size</option>
         <option>S</option><option>M</option><option>L</option>
-        <option>XL</option><option>XXL</option><option>3XL</option>
+        <option>XL</option><option>2XL</option><option>3XL</option>
       </select>
       <div class="hint">Between sizes? Tell us in your reply and we'll adjust the cut.</div>
     </div>
@@ -304,17 +424,255 @@ footer{
 </div>
 
 <script>
+/* ════════════════════════════════════════════════════════
+   改这里 — 产品数据。以后加款、改色、换图，只动这个数组。
+
+   code     款号，会存进数据库
+   name     给达人看的英文名
+   img      图片路径。放 'images/yh018.jpg'，图片传到仓库的
+            images/ 文件夹。留空字符串就显示款号色块。
+   badge    卡片左上角的小标签文字，留空就不显示。
+            想写 'New'、'Best seller'、'Top pick' 都行。
+   colors   name = 存进数据库、给达人看的颜色名
+            hex  = 色点显示的颜色（后面注释是中文对照）
+   sizes    这个款实际能做的尺码。选中这个款之后，下面表单的
+            尺码下拉会自动只剩这几个，达人选不到做不了的码。
+            断码了就把那个码从数组里删掉。
+
+   数组顺序 = 页面上的显示顺序，想调前后直接挪位置。
+   ════════════════════════════════════════════════════════ */
+const ALL_SIZES = ['S','M','L','XL','2XL','3XL'];
+
+const S_2XL = ['S','M','L','XL','2XL'];
+const S_3XL = ['S','M','L','XL','2XL','3XL'];
+
+const PRODUCTS = [
+  {
+    code:'YH018', name:'Lace Crop Top', img:'', badge:'Top pick',
+    sizes:S_2XL,
+    colors:[
+      {name:'Black',      hex:'#1C1A1C'},  // 黑色
+      {name:'Rose Red',   hex:'#C4456F'},  // 玫红
+      {name:'Sky Blue',   hex:'#A9C9E2'},  // 天蓝
+      {name:'White',      hex:'#F7F4EF'},  // 白色
+      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
+      {name:'Brown',      hex:'#7A5742'},  // 棕色
+      {name:'Dark Green', hex:'#2E4739'}   // 墨绿
+    ]
+  },
+  {
+    code:'YH005', name:'Lace Blouse', img:'', badge:'',
+    sizes:S_3XL,
+    colors:[
+      {name:'White',       hex:'#F7F4EF'},  // 白色
+      {name:'Apricot',     hex:'#E3C4A0'},  // 杏色
+      {name:'Light Green', hex:'#C2D9B8'},  // 浅绿
+      {name:'Black',       hex:'#1C1A1C'},  // 黑色
+      {name:'Sky Blue',    hex:'#A9C9E2'},  // 天蓝
+      {name:'Dark Green',  hex:'#2E4739'},  // 墨绿
+      {name:'Navy',        hex:'#232F4D'},  // 藏青
+      {name:'Pink',        hex:'#F0C3CC'}   // 粉色
+    ]
+  },
+  {
+    code:'KC002', name:'Baggy Cargo Pants', img:'', badge:'',
+    sizes:S_2XL,
+    colors:[
+      {name:'Army Green', hex:'#4F5440'},  // 军绿
+      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
+      {name:'Black',      hex:'#1C1A1C'},  // 黑色
+      {name:'Brown',      hex:'#7A5742'},  // 棕色
+      {name:'Orange',     hex:'#E2793C'},  // 橘色
+      {name:'Navy',       hex:'#232F4D'},  // 藏青
+      {name:'Neon Green', hex:'#A8E05F'},  // 荧光绿
+      {name:'Sage Green', hex:'#9DAE8B'}   // 鼠尾草绿
+    ]
+  },
+  {
+    code:'YH028', name:'Turtleneck Lace Blouse', img:'', badge:'',
+    sizes:S_2XL,
+    colors:[
+      {name:'White', hex:'#F7F4EF'},  // 白色
+      {name:'Black', hex:'#1C1A1C'}   // 黑色
+    ]
+  },
+  {
+    code:'YH020', name:'Vintage Shirt', img:'', badge:'',
+    sizes:S_2XL,
+    colors:[
+      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
+      {name:'White',      hex:'#F7F4EF'},  // 白色
+      {name:'Black',      hex:'#1C1A1C'},  // 黑色
+      {name:'Wine Red',   hex:'#6B2232'},  // 酒红
+      {name:'Dark Green', hex:'#2E4739'},  // 墨绿
+      {name:'Navy',       hex:'#232F4D'},  // 藏青
+      {name:'Pink',       hex:'#F0C3CC'},  // 粉色
+      {name:'Rose Red',   hex:'#C4456F'},  // 玫红
+      {name:'Sky Blue',   hex:'#A9C9E2'}   // 天蓝
+    ]
+  },
+  {
+    code:'YH015', name:'Eyelet Button-Up Shirt', img:'', badge:'',
+    sizes:S_2XL,
+    colors:[
+      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
+      {name:'Dark Green', hex:'#2E4739'},  // 墨绿
+      {name:'Rose Red',   hex:'#C4456F'},  // 玫红
+      {name:'Sky Blue',   hex:'#A9C9E2'},  // 天蓝
+      {name:'White',      hex:'#F7F4EF'},  // 白色
+      {name:'Black',      hex:'#1C1A1C'},  // 黑色
+      {name:'Pink',       hex:'#F0C3CC'}   // 粉色
+    ]
+  },
+  {
+    code:'YH023', name:'3/4 Sleeve Lace Shirt', img:'', badge:'',
+    sizes:S_2XL,
+    colors:[
+      {name:'Apricot',  hex:'#E3C4A0'},  // 杏色
+      {name:'Black',    hex:'#1C1A1C'},  // 黑色
+      {name:'Pink',     hex:'#F0C3CC'},  // 粉色
+      {name:'Sky Blue', hex:'#A9C9E2'},  // 天蓝
+      {name:'White',    hex:'#F7F4EF'}   // 白色
+    ]
+  },
+  {
+    code:'YH025', name:'Long Sleeve Lace Shirt', img:'', badge:'',
+    sizes:S_2XL,
+    colors:[
+      {name:'White',    hex:'#F7F4EF'},  // 白色
+      {name:'Black',    hex:'#1C1A1C'},  // 黑色
+      {name:'Apricot',  hex:'#E3C4A0'},  // 杏色
+      {name:'Pink',     hex:'#F0C3CC'},  // 粉色
+      {name:'Sky Blue', hex:'#A9C9E2'}   // 天蓝
+    ]
+  }
+];
+/* ════════════════════════════════════════════════════════ */
+
 const SUPABASE_URL = 'https://vjblxvebexpqlxfhwzlm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_TAtVWHXtEycUHu1xwslZSw_JdFOOg5l';
 
-const f    = document.getElementById('f');
-const btn  = document.getElementById('btn');
-const msg  = document.getElementById('msg');
-const app  = document.getElementById('app');
-const done = document.getElementById('done');
+const f      = document.getElementById('f');
+const btn    = document.getElementById('btn');
+const msg    = document.getElementById('msg');
+const app    = document.getElementById('app');
+const done   = document.getElementById('done');
+const cat    = document.getElementById('cat');
+const picked = document.getElementById('picked');
+const pickSw = document.getElementById('pickSw');
+const pickTxt= document.getElementById('pickTxt');
+const nopick = document.getElementById('nopick');
 
 const val = id => document.getElementById(id).value.trim();
 
+/* ── catalogue ── */
+let pick = {code:null, color:null, hex:null};
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderCat(){
+  cat.innerHTML = PRODUCTS.map((p, pi) => {
+    const tint = p.colors[0] ? p.colors[0].hex : '#EFE9E2';
+    const shot = p.img
+      ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">`
+      : `<div class="ph" style="background:linear-gradient(155deg,${esc(tint)}1F,transparent 72%)">${esc(p.code)}</div>`;
+    const tag  = p.badge ? `<span class="tag">${esc(p.badge)}</span>` : '';
+    const dots = p.colors.map((c, ci) =>
+      `<button type="button" class="dot" data-p="${pi}" data-c="${ci}"
+         style="background:${esc(c.hex)}"
+         aria-label="${esc(p.name)} in ${esc(c.name)}"></button>`
+    ).join('');
+    const sz = sizeLabel(p);
+    return `<div class="card" data-card="${pi}">
+      <div class="shot">${shot}${tag}</div>
+      <div class="meta">
+        <div class="codeline">
+          <span class="code">${esc(p.code)}</span>
+          <span class="sz">${esc(sz)}</span>
+        </div>
+        <div class="pname">${esc(p.name)}</div>
+        <div class="dots">${dots}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* 尺码标签：连续的一段显示成 S–3XL，零散的列出来 */
+function sizeLabel(p){
+  const s = (p.sizes && p.sizes.length) ? p.sizes : ALL_SIZES;
+  if (s.length === 1) return s[0];
+  const idx = s.map(x => ALL_SIZES.indexOf(x));
+  const run = idx.every((v,i) => i === 0 || v === idx[i-1] + 1);
+  return run ? `${s[0]}–${s[s.length-1]}` : s.join(' · ');
+}
+
+/* 选了款式之后，尺码下拉只留这个款做得出来的码 */
+function syncSizes(){
+  const sel = document.getElementById('size');
+  const keep = sel.value;
+  let list = ALL_SIZES;
+  if (pick.code){
+    const p = PRODUCTS.find(x => x.code === pick.code);
+    if (p && p.sizes && p.sizes.length) list = p.sizes;
+  }
+  sel.innerHTML = '<option value="">Pick your size</option>' +
+    list.map(s => `<option${s === keep ? ' selected' : ''}>${s}</option>`).join('');
+}
+
+function paintPick(){
+  document.querySelectorAll('.card').forEach(el => el.classList.remove('on'));
+  document.querySelectorAll('.dot').forEach(el => el.classList.remove('on'));
+
+  if (!pick.code){
+    picked.style.display = 'none';
+    nopick.style.display = 'block';
+    syncSizes();
+    return;
+  }
+
+  const pi = PRODUCTS.findIndex(p => p.code === pick.code);
+  if (pi > -1){
+    const card = document.querySelector(`.card[data-card="${pi}"]`);
+    if (card) card.classList.add('on');
+    const ci = PRODUCTS[pi].colors.findIndex(c => c.name === pick.color);
+    const dot = document.querySelector(`.dot[data-p="${pi}"][data-c="${ci}"]`);
+    if (dot) dot.classList.add('on');
+  }
+
+  pickSw.style.background = pick.hex || 'transparent';
+  pickTxt.innerHTML = `Your pick — <b>${esc(pick.code)}</b> in ${esc(pick.color)}`;
+  picked.style.display = 'flex';
+  nopick.style.display = 'none';
+  syncSizes();
+}
+
+cat.addEventListener('click', e => {
+  const dot = e.target.closest('.dot');
+  if (!dot) return;
+  const p = PRODUCTS[+dot.dataset.p];
+  const c = p.colors[+dot.dataset.c];
+  pick = (pick.code === p.code && pick.color === c.name)
+    ? {code:null, color:null, hex:null}
+    : {code:p.code, color:c.name, hex:c.hex};
+  paintPick();
+});
+
+document.getElementById('pickClr').addEventListener('click', () => {
+  pick = {code:null, color:null, hex:null};
+  paintPick();
+});
+
+document.getElementById('letus').addEventListener('click', () => {
+  document.getElementById('style').focus();
+  document.getElementById('style').scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+renderCat();
+
+/* ── form ── */
 function fail(text, focusId){
   msg.textContent = text;
   msg.className = 'msg bad';
@@ -326,7 +684,6 @@ f.addEventListener('submit', async e => {
   e.preventDefault();
   msg.className = 'msg';
 
-  // validate
   const email = val('email');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return fail('That email address looks incomplete.', 'email');
   if (!val('tt'))    return fail('We need your TikTok handle to match your request.', 'tt');
@@ -353,6 +710,8 @@ f.addEventListener('submit', async e => {
     zip:           val('zip'),
     size:          val('size'),
     content_style: val('style') || null,
+    style_code:    pick.code  || null,
+    style_color:   pick.color || null,
     usage_rights:  true,
     email_optin:   document.getElementById('optin').checked
   };
