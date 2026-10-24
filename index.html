@@ -156,14 +156,14 @@ h1 em{font-style:italic;color:var(--rose)}
 .dot:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
 
 .picked{
-  margin-top:16px;padding:12px 14px;
-  background:var(--raise);border:1px solid var(--line);
+  margin-top:16px;padding:13px 14px 14px;
+  background:var(--raise);border:1px solid var(--brass);
   border-radius:2px;font-size:14px;
-  display:flex;align-items:center;gap:10px;
 }
+.prow{display:flex;align-items:center;gap:10px}
 .picked .sw{
   width:16px;height:16px;border-radius:50%;
-  border:1px solid var(--line);flex:0 0 auto;
+  border:1px solid rgba(239,233,226,.3);flex:0 0 auto;
 }
 .picked .txt{flex:1;color:var(--bone)}
 .picked .txt b{font-weight:500}
@@ -171,8 +171,35 @@ h1 em{font-style:italic;color:var(--rose)}
   background:none;border:none;color:var(--mute);
   font-family:'Jost',sans-serif;font-size:12px;
   text-decoration:underline;cursor:pointer;padding:4px;
+  width:auto;margin:0;letter-spacing:0;text-transform:none;
 }
-.picked .clr:hover{color:var(--rose)}
+.picked .clr:hover{color:var(--rose);background:none}
+
+.szlab{
+  display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);margin:13px 0 8px;
+}
+.szbtns{display:flex;flex-wrap:wrap;gap:7px}
+.szb{
+  width:auto;margin:0;padding:8px 0;min-width:46px;
+  background:transparent;border:1px solid var(--line);
+  color:var(--bone);border-radius:2px;
+  font-family:'Jost',sans-serif;font-weight:400;
+  font-size:13px;letter-spacing:.04em;text-transform:none;
+  transition:border-color .16s,background .16s;
+}
+.szb:hover:not(.on){border-color:var(--mute);background:transparent}
+.szb.on{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.szb:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+
+.cont{
+  width:100%;margin-top:14px;padding:13px;
+  background:transparent;border:1px solid var(--brass);
+  color:var(--brass);border-radius:2px;
+  font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;
+}
+.cont:hover:not(:disabled){background:var(--brass);color:var(--ink)}
+.cont:disabled{opacity:.4;cursor:default;border-color:var(--line);color:var(--mute)}
 .nopick{
   margin-top:14px;font-size:13px;color:var(--mute);text-align:center;
 }
@@ -216,6 +243,42 @@ input:focus,select:focus{
 }
 input::placeholder{color:#5C4F5E}
 .hint{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.5}
+
+/* ── size guide ── */
+.guide{
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:2px;
+  background:var(--raise);
+}
+.guide summary{
+  padding:12px 14px;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);cursor:pointer;list-style:none;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary::after{content:'+';font-size:16px;line-height:1;color:var(--brass)}
+.guide[open] summary::after{content:'\2212'}
+.guide summary:focus-visible{outline:2px solid var(--brass);outline-offset:-2px}
+.gbody{padding:0 14px 14px}
+.units{display:flex;gap:6px;margin-bottom:11px}
+.units button{
+  width:auto;margin:0;padding:5px 12px;
+  background:transparent;border:1px solid var(--line);
+  color:var(--mute);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;border-radius:2px;font-weight:400;
+}
+.units button.on{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.guide table{width:100%;border-collapse:collapse;font-size:12.5px}
+.guide th,.guide td{padding:7px 3px;text-align:center;border-bottom:1px solid var(--line)}
+.guide th{
+  color:var(--mute);font-weight:400;font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.guide td:first-child,.guide th:first-child{text-align:left;color:var(--brass)}
+.guide tr:last-child td{border-bottom:none}
+.gnote{font-size:12px;color:var(--mute);line-height:1.5}
 
 /* ── checkboxes ── */
 .check{
@@ -306,9 +369,14 @@ footer{
   <div class="cat" id="cat"></div>
 
   <div class="picked" id="picked" style="display:none">
-    <span class="sw" id="pickSw"></span>
-    <span class="txt" id="pickTxt"></span>
-    <button type="button" class="clr" id="pickClr">Clear</button>
+    <div class="prow">
+      <span class="sw" id="pickSw"></span>
+      <span class="txt" id="pickTxt"></span>
+      <button type="button" class="clr" id="pickClr">Clear</button>
+    </div>
+    <span class="szlab">Your size</span>
+    <div class="szbtns" id="szbtns"></div>
+    <button type="button" class="cont" id="cont" disabled>Pick a size to continue</button>
   </div>
 
   <div class="nopick" id="nopick">
@@ -392,6 +460,17 @@ footer{
         <option>XL</option><option>2XL</option><option>3XL</option>
       </select>
       <div class="hint">Between sizes? Tell us in your reply and we'll adjust the cut.</div>
+
+      <details class="guide" id="guide">
+        <summary>Size guide</summary>
+        <div class="gbody">
+          <div class="units">
+            <button type="button" data-u="in" class="on">inch</button>
+            <button type="button" data-u="cm">cm</button>
+          </div>
+          <div id="gbox"></div>
+        </div>
+      </details>
     </div>
 
     <div class="eyelets" role="presentation"></div>
@@ -435,9 +514,22 @@ footer{
             想写 'New'、'Best seller'、'Top pick' 都行。
    colors   name = 存进数据库、给达人看的颜色名
             hex  = 色点显示的颜色（后面注释是中文对照）
+            每个颜色还可以有自己的图，达人点色点时卡片的图
+            就换成那个颜色。不用写代码，按这个命名传图即可：
+              images/yh018-black.jpg
+              images/yh018-sky-blue.jpg      (空格换成连字符)
+              images/kc002-army-green.jpg
+            某个颜色没传图，自动回退到款式主图 images/yh018.jpg，
+            款式主图也没有才显示款号色块。所以可以先传 8 张
+            款式主图，以后再慢慢补颜色图，不用一次做完。
    sizes    这个款实际能做的尺码。选中这个款之后，下面表单的
             尺码下拉会自动只剩这几个，达人选不到做不了的码。
             断码了就把那个码从数组里删掉。
+   chart    这个款的尺码表，单位一律填【厘米】，页面会自动
+            换算成英寸给达人看（美国达人不认厘米）。
+              cols = 量哪几个维度，自己定，几个都行
+              rows = 每个尺码一行，数字顺序要和 cols 对上
+            没有数据就写 chart:null，页面会显示「尺码表稍后提供」。
 
    数组顺序 = 页面上的显示顺序，想调前后直接挪位置。
    ════════════════════════════════════════════════════════ */
@@ -448,102 +540,134 @@ const S_3XL = ['S','M','L','XL','2XL','3XL'];
 
 const PRODUCTS = [
   {
-    code:'YH018', name:'Lace Crop Top', img:'', badge:'Top pick',
+    code:'YH018', name:'Lace Crop Top', img:'images/yh018.jpg', badge:'Top pick',
     sizes:S_2XL,
+    /* ↓↓↓ 这组数字是我编的示例，必须换成真实尺寸 ↓↓↓ */
+    chart:{
+      cols:['Bust','Length','Shoulder','Sleeve'],
+      rows:{
+        'S'  :[ 88, 40, 36, 58],
+        'M'  :[ 92, 41, 37, 59],
+        'L'  :[ 96, 42, 38, 60],
+        'XL' :[100, 43, 39, 61],
+        '2XL':[104, 44, 40, 62]
+      }
+    },
     colors:[
-      {name:'Black',      hex:'#1C1A1C'},  // 黑色
-      {name:'Rose Red',   hex:'#C4456F'},  // 玫红
-      {name:'Sky Blue',   hex:'#A9C9E2'},  // 天蓝
-      {name:'White',      hex:'#F7F4EF'},  // 白色
-      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
-      {name:'Brown',      hex:'#7A5742'},  // 棕色
-      {name:'Dark Green', hex:'#2E4739'}   // 墨绿
+      {name:'Black',      hex:'#211E1D'},  // 黑色
+      {name:'Rose Red',   hex:'#D15A81'},  // 玫红
+      {name:'Sky Blue',   hex:'#B8C4D4'},  // 天蓝
+      {name:'White',      hex:'#F0EDE9'},  // 白色
+      {name:'Apricot',    hex:'#DDD0C0'},  // 杏色
+      {name:'Brown',      hex:'#5A3E33'},  // 棕色
+      {name:'Dark Green', hex:'#365843'}   // 墨绿
     ]
   },
   {
-    code:'YH005', name:'Lace Blouse', img:'', badge:'',
+    code:'YH005', name:'Lace Blouse', img:'images/yh005.jpg', badge:'',
     sizes:S_3XL,
+    chart:null,
     colors:[
-      {name:'White',       hex:'#F7F4EF'},  // 白色
-      {name:'Apricot',     hex:'#E3C4A0'},  // 杏色
-      {name:'Light Green', hex:'#C2D9B8'},  // 浅绿
-      {name:'Black',       hex:'#1C1A1C'},  // 黑色
-      {name:'Sky Blue',    hex:'#A9C9E2'},  // 天蓝
-      {name:'Dark Green',  hex:'#2E4739'},  // 墨绿
-      {name:'Navy',        hex:'#232F4D'},  // 藏青
-      {name:'Pink',        hex:'#F0C3CC'}   // 粉色
+      {name:'White',       hex:'#F0EDE9'},  // 白色
+      {name:'Apricot',     hex:'#DDD0C0'},  // 杏色
+      {name:'Sage Green',  hex:'#8C9F90'},  // 浅绿（图片文件是 sage green）
+      {name:'Black',       hex:'#211E1D'},  // 黑色
+      {name:'Sky Blue',    hex:'#B8C4D4'},  // 天蓝
+      {name:'Dark Green',  hex:'#365843'},  // 墨绿
+      {name:'Navy',        hex:'#202739'},  // 藏青
+      {name:'Pink',        hex:'#E5CBCB'}   // 粉色
     ]
   },
   {
-    code:'KC002', name:'Baggy Cargo Pants', img:'', badge:'',
+    code:'KC002', name:'Baggy Cargo Pants', img:'images/kc002.jpg', badge:'',
     sizes:S_2XL,
+    chart:null,
     colors:[
-      {name:'Army Green', hex:'#4F5440'},  // 军绿
-      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
-      {name:'Black',      hex:'#1C1A1C'},  // 黑色
-      {name:'Brown',      hex:'#7A5742'},  // 棕色
-      {name:'Orange',     hex:'#E2793C'},  // 橘色
-      {name:'Navy',       hex:'#232F4D'},  // 藏青
-      {name:'Neon Green', hex:'#A8E05F'},  // 荧光绿
-      {name:'Sage Green', hex:'#9DAE8B'}   // 鼠尾草绿
+      {name:'Army Green', hex:'#585436'},  // 军绿
+      {name:'Apricot',    hex:'#DDD0C0'},  // 杏色
+      {name:'Black',      hex:'#211E1D'},  // 黑色
+      {name:'Brown',      hex:'#5A3E33'},  // 棕色
+      {name:'Orange',     hex:'#E55B3C'},  // 橘色
+      {name:'Navy',       hex:'#202739'},  // 藏青
+      {name:'Neon Green', hex:'#78D35D'},  // 荧光绿
+      {name:'Sage Green', hex:'#8C9F90'}   // 鼠尾草绿
     ]
   },
   {
-    code:'YH028', name:'Turtleneck Lace Blouse', img:'', badge:'',
+    /* 这个款你没在清单里提，是从图片里发现的。
+       名称和尺码是我按 KC002 填的占位，需要你确认。 */
+    code:'KC001', name:'Cargo Pants', img:'images/kc001.jpg', badge:'',
+    chart:null,
     sizes:S_2XL,
     colors:[
-      {name:'White', hex:'#F7F4EF'},  // 白色
-      {name:'Black', hex:'#1C1A1C'}   // 黑色
+      {name:'Army Green', hex:'#585436'},  // 军绿
+      {name:'Apricot',    hex:'#DDD0C0'},  // 杏色
+      {name:'Black',      hex:'#211E1D'},  // 黑色
+      {name:'Brown',      hex:'#5A3E33'},  // 棕色
+      {name:'Navy',       hex:'#202739'}   // 藏青
     ]
   },
   {
-    code:'YH020', name:'Vintage Shirt', img:'', badge:'',
+    code:'YH028', name:'Turtleneck Lace Blouse', img:'images/yh028.jpg', badge:'',
     sizes:S_2XL,
+    chart:null,
     colors:[
-      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
-      {name:'White',      hex:'#F7F4EF'},  // 白色
-      {name:'Black',      hex:'#1C1A1C'},  // 黑色
-      {name:'Wine Red',   hex:'#6B2232'},  // 酒红
-      {name:'Dark Green', hex:'#2E4739'},  // 墨绿
-      {name:'Navy',       hex:'#232F4D'},  // 藏青
-      {name:'Pink',       hex:'#F0C3CC'},  // 粉色
-      {name:'Rose Red',   hex:'#C4456F'},  // 玫红
-      {name:'Sky Blue',   hex:'#A9C9E2'}   // 天蓝
+      {name:'White', hex:'#F0EDE9'},  // 白色
+      {name:'Black', hex:'#211E1D'}   // 黑色
     ]
   },
   {
-    code:'YH015', name:'Eyelet Button-Up Shirt', img:'', badge:'',
+    code:'YH020', name:'Vintage Shirt', img:'images/yh020.jpg', badge:'',
     sizes:S_2XL,
+    chart:null,
     colors:[
-      {name:'Apricot',    hex:'#E3C4A0'},  // 杏色
-      {name:'Dark Green', hex:'#2E4739'},  // 墨绿
-      {name:'Rose Red',   hex:'#C4456F'},  // 玫红
-      {name:'Sky Blue',   hex:'#A9C9E2'},  // 天蓝
-      {name:'White',      hex:'#F7F4EF'},  // 白色
-      {name:'Black',      hex:'#1C1A1C'},  // 黑色
-      {name:'Pink',       hex:'#F0C3CC'}   // 粉色
+      {name:'Apricot',    hex:'#DDD0C0'},  // 杏色
+      {name:'White',      hex:'#F0EDE9'},  // 白色
+      {name:'Black',      hex:'#211E1D'},  // 黑色
+      {name:'Wine Red',   hex:'#562227'},  // 酒红
+      {name:'Dark Green', hex:'#365843'},  // 墨绿
+      {name:'Navy',       hex:'#202739'},  // 藏青
+      {name:'Pink',       hex:'#E5CBCB'},  // 粉色
+      {name:'Rose Red',   hex:'#D15A81'},  // 玫红
+      {name:'Sky Blue',   hex:'#B8C4D4'}   // 天蓝
     ]
   },
   {
-    code:'YH023', name:'3/4 Sleeve Lace Shirt', img:'', badge:'',
+    code:'YH015', name:'Eyelet Button-Up Shirt', img:'images/yh015.jpg', badge:'',
     sizes:S_2XL,
+    chart:null,
     colors:[
-      {name:'Apricot',  hex:'#E3C4A0'},  // 杏色
-      {name:'Black',    hex:'#1C1A1C'},  // 黑色
-      {name:'Pink',     hex:'#F0C3CC'},  // 粉色
-      {name:'Sky Blue', hex:'#A9C9E2'},  // 天蓝
-      {name:'White',    hex:'#F7F4EF'}   // 白色
+      {name:'Apricot',    hex:'#DDD0C0'},  // 杏色
+      {name:'Dark Green', hex:'#365843'},  // 墨绿
+      {name:'Rose Red',   hex:'#D15A81'},  // 玫红
+      {name:'Sky Blue',   hex:'#B8C4D4'},  // 天蓝
+      {name:'White',      hex:'#F0EDE9'},  // 白色
+      {name:'Black',      hex:'#211E1D'},  // 黑色
+      {name:'Pink',       hex:'#E5CBCB'}   // 粉色
     ]
   },
   {
-    code:'YH025', name:'Long Sleeve Lace Shirt', img:'', badge:'',
+    code:'YH023', name:'3/4 Sleeve Lace Shirt', img:'images/yh023.jpg', badge:'',
     sizes:S_2XL,
+    chart:null,
     colors:[
-      {name:'White',    hex:'#F7F4EF'},  // 白色
-      {name:'Black',    hex:'#1C1A1C'},  // 黑色
-      {name:'Apricot',  hex:'#E3C4A0'},  // 杏色
-      {name:'Pink',     hex:'#F0C3CC'},  // 粉色
-      {name:'Sky Blue', hex:'#A9C9E2'}   // 天蓝
+      {name:'Apricot',  hex:'#DDD0C0'},  // 杏色
+      {name:'Black',    hex:'#211E1D'},  // 黑色
+      {name:'Pink',     hex:'#E5CBCB'},  // 粉色
+      {name:'Sky Blue', hex:'#B8C4D4'},  // 天蓝
+      {name:'White',    hex:'#F0EDE9'}   // 白色
+    ]
+  },
+  {
+    code:'YH025', name:'Long Sleeve Lace Shirt', img:'images/yh025.jpg', badge:'',
+    sizes:S_2XL,
+    chart:null,
+    colors:[
+      {name:'White',    hex:'#F0EDE9'},  // 白色
+      {name:'Black',    hex:'#211E1D'},  // 黑色
+      {name:'Apricot',  hex:'#DDD0C0'},  // 杏色
+      {name:'Pink',     hex:'#E5CBCB'},  // 粉色
+      {name:'Sky Blue', hex:'#B8C4D4'}   // 天蓝
     ]
   }
 ];
@@ -573,13 +697,50 @@ function esc(s){
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+/* 颜色图路径：没手动写就按 款号-颜色名.jpg 自动推
+   YH018 的 Sky Blue → images/yh018-sky-blue.jpg
+   想让某个颜色不用单独的图，把它的 img 写成 null */
+function colorImgPath(p, c){
+  if (c.img !== undefined) return c.img || '';
+  if (!p.img) return '';
+  return 'images/' + p.code.toLowerCase() + '-' +
+         c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.jpg';
+}
+
+/* 卡片图片区。ci = 当前显示第几个颜色，null = 款式主图 */
+function shotHTML(p, ci){
+  const c    = (ci != null && p.colors[ci]) ? p.colors[ci] : null;
+  const tint = ((c || p.colors[0] || {}).hex) || '#EFE9E2';
+  const tag  = p.badge ? `<span class="tag">${esc(p.badge)}</span>` : '';
+  const src  = c ? (colorImgPath(p, c) || p.img) : p.img;
+
+  if (!src){
+    return `<div class="ph" style="background:linear-gradient(155deg,${esc(tint)}1F,transparent 72%)">${esc(p.code)}</div>` + tag;
+  }
+  return `<img src="${esc(src)}" alt="${esc(p.name)}" loading="lazy"
+    data-main="${esc(p.img || '')}" data-code="${esc(p.code)}" data-tint="${esc(tint)}"
+    onerror="imgFail(this)">` + tag;
+}
+
+/* 图没传或路径写错：颜色图 → 退回款式主图 → 再没有才显示款号色块 */
+function imgFail(el){
+  const main = el.dataset.main;
+  if (main && el.getAttribute('src') !== main){
+    el.setAttribute('src', main);
+    return;
+  }
+  const shot = el.parentNode;
+  if (!shot) return;
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.style.background = 'linear-gradient(155deg,' + el.dataset.tint + '1F,transparent 72%)';
+  ph.textContent = el.dataset.code;
+  el.remove();
+  shot.insertBefore(ph, shot.firstChild);
+}
+
 function renderCat(){
   cat.innerHTML = PRODUCTS.map((p, pi) => {
-    const tint = p.colors[0] ? p.colors[0].hex : '#EFE9E2';
-    const shot = p.img
-      ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">`
-      : `<div class="ph" style="background:linear-gradient(155deg,${esc(tint)}1F,transparent 72%)">${esc(p.code)}</div>`;
-    const tag  = p.badge ? `<span class="tag">${esc(p.badge)}</span>` : '';
     const dots = p.colors.map((c, ci) =>
       `<button type="button" class="dot" data-p="${pi}" data-c="${ci}"
          style="background:${esc(c.hex)}"
@@ -587,7 +748,7 @@ function renderCat(){
     ).join('');
     const sz = sizeLabel(p);
     return `<div class="card" data-card="${pi}">
-      <div class="shot">${shot}${tag}</div>
+      <div class="shot">${shotHTML(p, null)}</div>
       <div class="meta">
         <div class="codeline">
           <span class="code">${esc(p.code)}</span>
@@ -609,18 +770,109 @@ function sizeLabel(p){
   return run ? `${s[0]}–${s[s.length-1]}` : s.join(' · ');
 }
 
+/* ── 尺码表：挂在选中的那个款下面 ── */
+let unit = 'in';   // 默认英寸，美国达人看的
+
+function renderGuide(){
+  const box = document.getElementById('gbox');
+  if (!box) return;
+
+  if (!pick.code){
+    box.innerHTML = '<div class="gnote">Pick a style above and its measurements appear here.</div>';
+    return;
+  }
+
+  const p = PRODUCTS.find(x => x.code === pick.code);
+  if (!p || !p.chart || !p.chart.rows){
+    box.innerHTML = '<div class="gnote">Measurements for ' + esc(pick.code) +
+      ' aren\'t up yet — ask us and we\'ll send them over.</div>';
+    return;
+  }
+
+  const c = p.chart;
+  const conv = v => unit === 'in' ? (v / 2.54).toFixed(1) : v;
+
+  const head = '<tr><th>Size</th>' +
+    c.cols.map(x => '<th>' + esc(x) + '</th>').join('') + '</tr>';
+
+  const body = (p.sizes || []).filter(s => c.rows[s]).map(s =>
+    '<tr><td>' + esc(s) + '</td>' +
+    c.rows[s].map(v => '<td>' + conv(v) + '</td>').join('') + '</tr>'
+  ).join('');
+
+  box.innerHTML = '<table>' + head + body + '</table>' +
+    '<div class="gnote" style="margin-top:9px">Garment measurements in ' +
+    (unit === 'in' ? 'inches' : 'centimetres') + '.</div>';
+}
+
+document.querySelectorAll('.units button').forEach(b => {
+  b.addEventListener('click', () => {
+    unit = b.dataset.u;
+    document.querySelectorAll('.units button')
+      .forEach(x => x.classList.toggle('on', x === b));
+    renderGuide();
+  });
+});
+
 /* 选了款式之后，尺码下拉只留这个款做得出来的码 */
 function syncSizes(){
   const sel = document.getElementById('size');
-  const keep = sel.value;
   let list = ALL_SIZES;
   if (pick.code){
     const p = PRODUCTS.find(x => x.code === pick.code);
     if (p && p.sizes && p.sizes.length) list = p.sizes;
   }
+  // 换款之后原来的码可能没有了，没有就清掉
+  if (pickSize && !list.includes(pickSize)) pickSize = null;
   sel.innerHTML = '<option value="">Pick your size</option>' +
-    list.map(s => `<option${s === keep ? ' selected' : ''}>${s}</option>`).join('');
+    list.map(s => `<option${s === pickSize ? ' selected' : ''}>${s}</option>`).join('');
+  sel.value = pickSize || '';
 }
+
+/* ── 尺码按钮：选完直接带进表单，达人不用再往下翻 ── */
+let pickSize = null;
+
+function renderSizeBtns(){
+  const box  = document.getElementById('szbtns');
+  const cont = document.getElementById('cont');
+  if (!box) return;
+
+  let list = ALL_SIZES;
+  if (pick.code){
+    const p = PRODUCTS.find(x => x.code === pick.code);
+    if (p && p.sizes && p.sizes.length) list = p.sizes;
+  }
+
+  box.innerHTML = list.map(s =>
+    `<button type="button" class="szb${s === pickSize ? ' on' : ''}" data-s="${esc(s)}">${esc(s)}</button>`
+  ).join('');
+
+  cont.disabled    = !pickSize;
+  cont.textContent = pickSize
+    ? `Confirm — ${pick.code} · ${pick.color} · ${pickSize}`
+    : 'Pick a size to continue';
+}
+
+document.getElementById('szbtns').addEventListener('click', e => {
+  const b = e.target.closest('.szb');
+  if (!b) return;
+  pickSize = (pickSize === b.dataset.s) ? null : b.dataset.s;
+  document.getElementById('size').value = pickSize || '';
+  renderSizeBtns();
+});
+
+/* 下面表单里改了尺码，上面按钮跟着变 */
+document.getElementById('size').addEventListener('change', e => {
+  pickSize = e.target.value || null;
+  renderSizeBtns();
+});
+
+/* 确认选样 —— 跳到表单，款式颜色尺码都已经填好 */
+document.getElementById('cont').addEventListener('click', () => {
+  const t = document.getElementById('email');
+  t.scrollIntoView({behavior:'smooth', block:'center'});
+  setTimeout(() => t.focus({preventScroll:true}), 420);
+});
 
 function paintPick(){
   document.querySelectorAll('.card').forEach(el => el.classList.remove('on'));
@@ -630,6 +882,8 @@ function paintPick(){
     picked.style.display = 'none';
     nopick.style.display = 'block';
     syncSizes();
+    renderSizeBtns();
+    renderGuide();
     return;
   }
 
@@ -644,16 +898,23 @@ function paintPick(){
 
   pickSw.style.background = pick.hex || 'transparent';
   pickTxt.innerHTML = `Your pick — <b>${esc(pick.code)}</b> in ${esc(pick.color)}`;
-  picked.style.display = 'flex';
+  picked.style.display = 'block';
   nopick.style.display = 'none';
   syncSizes();
+  renderSizeBtns();
+  renderGuide();
 }
 
 cat.addEventListener('click', e => {
   const dot = e.target.closest('.dot');
   if (!dot) return;
-  const p = PRODUCTS[+dot.dataset.p];
-  const c = p.colors[+dot.dataset.c];
+  const pi = +dot.dataset.p, ci = +dot.dataset.c;
+  const p = PRODUCTS[pi], c = p.colors[ci];
+
+  // 卡片的图跟着切到这个颜色（没有该颜色的图就自动留在款式主图）
+  const shot = document.querySelector(`.card[data-card="${pi}"] .shot`);
+  if (shot) shot.innerHTML = shotHTML(p, ci);
+
   pick = (pick.code === p.code && pick.color === c.name)
     ? {code:null, color:null, hex:null}
     : {code:p.code, color:c.name, hex:c.hex};
@@ -662,6 +923,7 @@ cat.addEventListener('click', e => {
 
 document.getElementById('pickClr').addEventListener('click', () => {
   pick = {code:null, color:null, hex:null};
+  pickSize = null;
   paintPick();
 });
 
@@ -671,6 +933,8 @@ document.getElementById('letus').addEventListener('click', () => {
 });
 
 renderCat();
+renderSizeBtns();
+renderGuide();
 
 /* ── form ── */
 function fail(text, focusId){
