@@ -10,14 +10,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#191419;
-  --raise:#241C26;
-  --line:#382E3A;
-  --bone:#EFE9E2;
-  --mute:#9A8C9B;
-  --rose:#B87D82;
-  --brass:#A88A50;
-  --err:#D48A8A;
+  /* 浅色主题。--ink 是页面底色，--bone 是主文字色，
+     两者原本是反的，改主题时整体互换，按钮等反色元素会自动跟着对。 */
+  --ink:#FAF7F3;     /* 页面背景 · 温米白 */
+  --raise:#FFFFFF;   /* 卡片 · 输入框 */
+  --line:#E6DDD3;    /* 边框 */
+  --bone:#2B2429;    /* 主文字 */
+  --mute:#7A6E76;    /* 次要文字 */
+  --rose:#A8626A;    /* 强调 · 玫瑰 */
+  --brass:#8A6C38;   /* 金 */
+  --err:#AF4A52;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -62,7 +64,7 @@ h1 em{font-style:italic;color:var(--rose)}
   background-size:20px 12px;
   background-repeat:repeat-x;
   background-position:center;
-  opacity:.45;
+  opacity:.6;
 }
 
 /* ── perks ── */
@@ -83,7 +85,7 @@ h1 em{font-style:italic;color:var(--rose)}
 }
 .sect-label .sub{
   display:block;letter-spacing:0;text-transform:none;
-  font-size:13px;color:#6B5F6C;margin-top:5px;
+  font-size:13px;color:var(--mute);margin-top:5px;
 }
 
 /* ── catalogue ── */
@@ -97,16 +99,17 @@ h1 em{font-style:italic;color:var(--rose)}
   border:1px solid var(--line);
   border-radius:3px;
   overflow:hidden;
+  box-shadow:0 1px 2px rgba(43,36,41,.05);
   transition:border-color .18s,box-shadow .18s;
 }
 .card.on{
   border-color:var(--brass);
-  box-shadow:0 0 0 2px rgba(168,138,80,.2);
+  box-shadow:0 0 0 2px rgba(138,108,56,.18);
 }
 .shot{
   position:relative;
   aspect-ratio:4/5;
-  background:#2E2530;
+  background:#F4EFE9;
   overflow:hidden;
 }
 .shot img{width:100%;height:100%;object-fit:cover;display:block}
@@ -115,12 +118,12 @@ h1 em{font-style:italic;color:var(--rose)}
   display:flex;align-items:center;justify-content:center;
   font-family:'Bodoni Moda',Georgia,serif;
   font-size:20px;letter-spacing:.1em;
-  color:rgba(239,233,226,.5);
+  color:rgba(43,36,41,.38);
 }
 .tag{
   position:absolute;top:8px;left:8px;
-  background:rgba(25,20,25,.82);
-  color:var(--brass);
+  background:rgba(28,22,27,.86);
+  color:#D6B673;
   font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   padding:4px 7px;border-radius:2px;
 }
@@ -143,7 +146,7 @@ h1 em{font-style:italic;color:var(--rose)}
 .dots{display:flex;flex-wrap:wrap;gap:6px}
 .dot{
   width:20px;height:20px;border-radius:50%;
-  border:1px solid rgba(239,233,226,.3);
+  border:1px solid rgba(43,36,41,.22);
   cursor:pointer;padding:0;background-clip:padding-box;
   position:relative;transition:transform .14s;
   flex:0 0 auto;
@@ -163,7 +166,7 @@ h1 em{font-style:italic;color:var(--rose)}
 .prow{display:flex;align-items:center;gap:10px}
 .picked .sw{
   width:16px;height:16px;border-radius:50%;
-  border:1px solid rgba(239,233,226,.3);flex:0 0 auto;
+  border:1px solid rgba(43,36,41,.22);flex:0 0 auto;
 }
 .picked .txt{flex:1;color:var(--bone)}
 .picked .txt b{font-weight:500}
@@ -239,9 +242,9 @@ select{
 input:focus,select:focus{
   outline:none;
   border-color:var(--brass);
-  box-shadow:0 0 0 3px rgba(168,138,80,.18);
+  box-shadow:0 0 0 3px rgba(138,108,56,.15);
 }
-input::placeholder{color:#5C4F5E}
+input::placeholder{color:#B3A8AF}
 .hint{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.5}
 
 /* ── size guide ── */
@@ -309,7 +312,7 @@ button{
   padding:17px;cursor:pointer;
   transition:background .18s,transform .12s;
 }
-button:hover:not(:disabled){background:#fff}
+button:hover:not(:disabled){background:#171215}
 button:active:not(:disabled){transform:translateY(1px)}
 button:disabled{opacity:.45;cursor:default}
 button:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
@@ -318,11 +321,11 @@ button:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
   margin-top:16px;padding:13px 15px;border-radius:2px;
   font-size:14px;display:none;
 }
-.msg.bad{display:block;background:rgba(212,138,138,.11);border:1px solid rgba(212,138,138,.35);color:var(--err)}
+.msg.bad{display:block;background:rgba(175,74,82,.07);border:1px solid rgba(175,74,82,.28);color:var(--err)}
 
 footer{
   margin-top:40px;text-align:center;
-  font-size:12.5px;color:#6B5F6C;line-height:1.7;
+  font-size:12.5px;color:var(--mute);line-height:1.7;
 }
 
 /* ── success ── */
@@ -535,6 +538,7 @@ footer{
    ════════════════════════════════════════════════════════ */
 const ALL_SIZES = ['S','M','L','XL','2XL','3XL'];
 
+const S_XL  = ['S','M','L','XL'];
 const S_2XL = ['S','M','L','XL','2XL'];
 const S_3XL = ['S','M','L','XL','2XL','3XL'];
 
@@ -594,11 +598,9 @@ const PRODUCTS = [
     ]
   },
   {
-    /* 这个款你没在清单里提，是从图片里发现的。
-       名称和尺码是我按 KC002 填的占位，需要你确认。 */
-    code:'KC001', name:'Cargo Pants', img:'images/kc001.jpg', badge:'',
+    code:'KC001', name:'Y2K Cargo Pants', img:'images/kc001.jpg', badge:'',
     chart:null,
-    sizes:S_2XL,
+    sizes:S_XL,
     colors:[
       {name:'Army Green', hex:'#585436'},  // 军绿
       {name:'Apricot',    hex:'#DDD0C0'},  // 杏色
@@ -715,7 +717,7 @@ function shotHTML(p, ci){
   const src  = c ? (colorImgPath(p, c) || p.img) : p.img;
 
   if (!src){
-    return `<div class="ph" style="background:linear-gradient(155deg,${esc(tint)}1F,transparent 72%)">${esc(p.code)}</div>` + tag;
+    return `<div class="ph" style="background:linear-gradient(155deg,${esc(tint)}3A,transparent 76%)">${esc(p.code)}</div>` + tag;
   }
   return `<img src="${esc(src)}" alt="${esc(p.name)}" loading="lazy"
     data-main="${esc(p.img || '')}" data-code="${esc(p.code)}" data-tint="${esc(tint)}"
