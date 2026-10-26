@@ -144,6 +144,30 @@ h1 em{font-style:italic;color:var(--rose)}
   margin:4px 0 9px;min-height:2.7em;
 }
 .dots{display:flex;flex-wrap:wrap;gap:6px}
+
+/* 卡片内的尺码行 —— 只在这个款被选中时展开 */
+.szrow{display:none;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.card.on .szrow{display:block}
+.szcap{
+  font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px;
+}
+.szs{display:flex;flex-wrap:wrap;gap:5px}
+/* 4 个码排 2×2 比 3+1 平衡 */
+.szs[data-n="4"] .sz-b{flex:0 0 calc(50% - 2.5px)}
+.szs[data-n="2"] .sz-b{flex:0 0 calc(50% - 2.5px)}
+.sz-b{
+  flex:0 0 calc(33.333% - 3.34px);
+  width:auto;margin:0;padding:8px 0;
+  background:transparent;border:1px solid var(--line);
+  color:var(--bone);border-radius:2px;
+  font-family:'Jost',sans-serif;font-weight:400;
+  font-size:12.5px;letter-spacing:0;text-transform:none;
+  transition:border-color .16s,background .16s;
+}
+.sz-b:hover:not(.on){border-color:var(--mute);background:transparent}
+.sz-b.on{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.sz-b:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .dot{
   width:20px;height:20px;border-radius:50%;
   border:1px solid rgba(43,36,41,.22);
@@ -377,8 +401,6 @@ footer{
       <span class="txt" id="pickTxt"></span>
       <button type="button" class="clr" id="pickClr">Clear</button>
     </div>
-    <span class="szlab">Your size</span>
-    <div class="szbtns" id="szbtns"></div>
     <button type="button" class="cont" id="cont" disabled>Pick a size to continue</button>
   </div>
 
@@ -758,6 +780,14 @@ function renderCat(){
         </div>
         <div class="pname">${esc(p.name)}</div>
         <div class="dots">${dots}</div>
+        <div class="szrow">
+          <div class="szcap">Your size</div>
+          <div class="szs" data-n="${(p.sizes || ALL_SIZES).length}">${
+            (p.sizes || ALL_SIZES).map(s =>
+              `<button type="button" class="sz-b" data-s="${esc(s)}">${esc(s)}</button>`
+            ).join('')
+          }</div>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -834,36 +864,24 @@ function syncSizes(){
 /* ── 尺码按钮：选完直接带进表单，达人不用再往下翻 ── */
 let pickSize = null;
 
+/* 高亮选中款卡片里的那个尺码，并更新确认按钮 */
 function renderSizeBtns(){
-  const box  = document.getElementById('szbtns');
+  document.querySelectorAll('.card').forEach(card => {
+    const on = card.classList.contains('on');
+    card.querySelectorAll('.sz-b').forEach(b =>
+      b.classList.toggle('on', on && !!pickSize && b.dataset.s === pickSize));
+  });
+
   const cont = document.getElementById('cont');
-  if (!box) return;
-
-  let list = ALL_SIZES;
-  if (pick.code){
-    const p = PRODUCTS.find(x => x.code === pick.code);
-    if (p && p.sizes && p.sizes.length) list = p.sizes;
-  }
-
-  box.innerHTML = list.map(s =>
-    `<button type="button" class="szb${s === pickSize ? ' on' : ''}" data-s="${esc(s)}">${esc(s)}</button>`
-  ).join('');
-
-  cont.disabled    = !pickSize;
-  cont.textContent = pickSize
+  if (!cont) return;
+  const ready = !!(pick.code && pickSize);
+  cont.disabled    = !ready;
+  cont.textContent = ready
     ? `Confirm — ${pick.code} · ${pick.color} · ${pickSize}`
     : 'Pick a size to continue';
 }
 
-document.getElementById('szbtns').addEventListener('click', e => {
-  const b = e.target.closest('.szb');
-  if (!b) return;
-  pickSize = (pickSize === b.dataset.s) ? null : b.dataset.s;
-  document.getElementById('size').value = pickSize || '';
-  renderSizeBtns();
-});
-
-/* 下面表单里改了尺码，上面按钮跟着变 */
+/* 下面表单里改了尺码，卡片里的按钮跟着变 */
 document.getElementById('size').addEventListener('change', e => {
   pickSize = e.target.value || null;
   renderSizeBtns();
@@ -908,6 +926,15 @@ function paintPick(){
 }
 
 cat.addEventListener('click', e => {
+  // 卡片内选尺码
+  const sz = e.target.closest('.sz-b');
+  if (sz){
+    pickSize = (pickSize === sz.dataset.s) ? null : sz.dataset.s;
+    document.getElementById('size').value = pickSize || '';
+    renderSizeBtns();
+    return;
+  }
+
   const dot = e.target.closest('.dot');
   if (!dot) return;
   const pi = +dot.dataset.p, ci = +dot.dataset.c;
